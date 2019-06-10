@@ -1,24 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Provider} from 'react-redux';
+import store from './store';
 
-import Welcome from './components/Welcome';
-import GamesBrowser from './components/GamesBrowser';
-import Game from './components/Game';
+import MainContainer from './components/MainContainer';
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {};
-    }
-    render() {
-        return (
-            <div id="app">
-                <Welcome />
-                <GamesBrowser />
-                <Game />
-            </div>
-        )
-    }
+const App = () => {
+    return (
+        <Provider store={store}>
+            <MainContainer />
+        </Provider>
+    );
 }
 
 export default App;

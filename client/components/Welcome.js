@@ -1,28 +1,45 @@
 import React, { Component } from 'react';
+import { nickNameConfirmed } from '../actions/nickNameActions';
+import socket from '../socket';
+import { connect } from 'react-redux';
 
 class Welcome extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            nickname: ''
-        };
+        this.onNickNameSubmit = this.onNickNameSubmit.bind(this);
 
-        this.onChange = this.onChange.bind(this);
+        // Handle nickname submission responses from socket
+        socket.on('nicknamedenied', nickName => {
+            this.refs.nickName.focus();
+            alert(`Nickname ${nickName} denied.`);
+        });
+        socket.on('nicknameconfirmed', nickName => {
+            this.props.nickNameConfirmed(nickName);
+        });
     }
+    onNickNameSubmit(e) {
+        e.preventDefault();
+        const input = this.refs.nickName;
+        const value = input.value.trim();
 
-    onChange(e) {
-        this.setState(e.target.value);
+        if (!value) {
+            input.focus();
+            return;
+        }
+        socket.emit('nicknamesubmitted', value);
     }
-
     render() {
+        if (this.props.nickName) {
+            return null;
+        }
         return (
             <div id="welcome">
                 <h1>Welcome to Guess Draw!</h1>
-                <form id="nickname">
+                <form onSubmit={this.onNickNameSubmit}>
                     <label>
                         Type a Nickname:
-                        <input type="text" name="nickname" onChange={this.onChange}/>
+                        <input ref="nickName" type="text" maxLength="12" />
                     </label>
                     <button type="submit">Submit</button>
                 </form>
@@ -31,4 +48,16 @@ class Welcome extends Component {
     }
 }
 
-export default Welcome;
+const mapStateToProps = state => {
+    return {
+        nickName: state.nickName
+    };
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        nickNameConfirmed: nickName => dispatch(nickNameConfirmed(nickName))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Welcome);

@@ -16,3 +16,19 @@ canvas {
         min-height: 100px;
     }
 }
+
+.players-container {
+    .player-slot {
+        // display: inline-block;
+        position: relative;
+        padding: 12px;
+        .toggle-slot {
+            height: 1em;
+            width: 1em;
+            position: relative;
+            right: 0;
+            border-radius: 100%;
+            border: 1px solid black;
+        }
+    }
+}

@@ -12,10 +12,10 @@ class MainContainer extends Component {
         let activeScreen;
 
         if (!this.props.nickName) {
-            activeScreen = <Welcome onNickNameSubmit={this.onNickNameSubmit} />;
+            activeScreen = <Welcome />;
         }
         else if (!this.props.game) {
-            activeScreen = <GamesBrowser onGameJoined={this.onGameJoined} />;
+            activeScreen = <GamesBrowser />;
         }
         else if (this.props.game.status === 'lobby') {
             activeScreen = <GameLobby />;

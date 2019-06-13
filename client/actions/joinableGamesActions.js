@@ -1,15 +1,8 @@
-import { RECIEVED_JOINABLE_GAMES_DATA, JOINED_GAME } from './types';
+import { RECIEVED_JOINABLE_GAMES_DATA } from './types';
 
 export function recievedJoinableGamesData(gamesData) {
     return {
-        type: RECIEVED_JOINABLE_GAMES_DATAs,
+        type: RECIEVED_JOINABLE_GAMES_DATA,
         payload: gamesData
     };
 };
-
-export function joinedGame(gameData) {
-    return {
-        type: JOINED_GAME,
-        payload: gameData
-    };
-}

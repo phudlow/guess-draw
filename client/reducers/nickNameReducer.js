@@ -7,10 +7,7 @@ const initialState = {
 export default function (state = initialState, action) {
     switch (action.type) {
         case NICKNAME_CONFIRMED:
-            return {
-                ...state,
-                nickName: action.payload
-            };
+            return action.payload;
         default:
             return state;
     }

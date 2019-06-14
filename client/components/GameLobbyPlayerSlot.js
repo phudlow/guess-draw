@@ -10,6 +10,7 @@ function GameLobbyPlayerSlot(props) {
         toggler = <span className="toggle-slot" onClick={props.onSlotTogglerClick} >{symbol}</span>;
     }
 
+    console.log(player);
     return (
         <div className="player-slot" idx={props.idx}>
             <span onClick={props.onPlayerSlotClick}>{player}</span>

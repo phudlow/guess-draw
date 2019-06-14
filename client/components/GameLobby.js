@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import GameLobbyPlayerSlot from './GameLobbyPlayerSlot';
+
+import { connect } from 'react-redux';
 import socket from '../socket';
+
 import { toggledSlotOpenClosed, switchedPlayerSlot, kickedFromGame, leftGame } from '../actions/gameActions';
+import { OPEN_SLOT, CLOSED_SLOT } from '../../common/constants';
 
 class GameLobby extends Component {
     constructor(props) {
@@ -34,7 +37,7 @@ class GameLobby extends Component {
     }
     onPlayerSlotClick(e) {
         const slotIdx = e.nativeEvent.target.parentNode.getAttribute('idx');
-        if (this.props.game.players[slotIdx] === 'OPEN') {
+        if (this.props.game.players[slotIdx] === OPEN_SLOT) {
             socket.emit('switchplayerslot', {
                 gameId: this.props.game.id,
                 slotIdx
@@ -51,7 +54,7 @@ class GameLobby extends Component {
         let slotIdx = e.nativeEvent.target.parentNode.getAttribute('idx');
         const occupiedBy = this.props.game.players[slotIdx];
 
-        if (!['OPEN', 'CLOSED'].includes(occupiedBy)) {
+        if (![OPEN_SLOT, CLOSED_SLOT].includes(occupiedBy)) {
             confirmed = window.confirm(`This slot is occupied by ${occupiedBy}. Are you sure you want to close this slot and remove ${occupiedBy}?`);
         }
 

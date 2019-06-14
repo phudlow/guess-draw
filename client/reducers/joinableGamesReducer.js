@@ -1,4 +1,4 @@
-import { RECIEVED_JOINABLE_GAMES_DATA } from '../actions/types';
+import { NEW_GAMES_BROWSER_DATA } from '../actions/types';
 
 const initialState = {
     joinableGames: []
@@ -6,7 +6,7 @@ const initialState = {
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case RECIEVED_JOINABLE_GAMES_DATA:
+        case NEW_GAMES_BROWSER_DATA:
             return action.payload;
         default:
             return state;

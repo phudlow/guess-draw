@@ -3,9 +3,11 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 
 const express = require('express');
-const app    = express();
-const server = require('http').Server(app);
-const io     = require('socket.io')(server);
+const app     = express();
+const server  = require('http').Server(app);
+const io      = require('socket.io')(server);
+
+const { OPEN_SLOT, CLOSED_SLOT } = require('../common/constants');
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => { console.log(`Listening on port ${PORT}`); });
@@ -19,14 +21,10 @@ app.use(helmet());
 // Static files
 app.use(express.static(path.resolve(__dirname, '../dist')));
 
-app.get('/', (req, res) => {
-    console.log('connected to express app');
-});
-
 const clients  = [];
 const games    = {};
 let currGameId = 0;
-function getJoinableGames() {
+function getGamesBrowserData() {
     return Object.values(games).map(game => game.serialize());
 }
 
@@ -37,14 +35,14 @@ io.on('connection', socket => {
     socket.on('nicknamesubmitted', nickName => {
         if (
             clients.find(client => client.nickName === nickName) ||
-            nickName.toUpperCase() === 'OPEN' ||
-            nickName.toUpperCase() === 'CLOSED'
+            nickName.toUpperCase() === OPEN_SLOT ||
+            nickName.toUpperCase() === CLOSED_SLOT
         ) {
             socket.emit('nicknamedenied', nickName);
         } else {
             socket.nickName = nickName;
             socket.emit('nicknameconfirmed', nickName);
-            socket.emit('joinablegamesdata', getJoinableGames());
+            socket.emit('newgamesbrowserdata', getGamesBrowserData());
             socket.join('gamesbrowser');
         }
     });
@@ -55,7 +53,7 @@ io.on('connection', socket => {
         games[game.id] = game;
         socket.join(game.id);
         socket.emit('createdgame', game.serialize());
-        io.to('gamesbrowser').emit('joinablegamesdata', getJoinableGames());
+        io.to('gamesbrowser').emit('newgamesbrowserdata', getGamesBrowserData());
     });
 
     // Join existing game
@@ -66,7 +64,7 @@ io.on('connection', socket => {
 
         // Place player in first joinable spot
         for ( let i = 0, len = maxPlayers; i < len; i++ ) {
-            if (players[i] === 'OPEN') {
+            if (players[i] === OPEN_SLOT) {
                 games[id].players[i] = socket;
                 break;
             }
@@ -75,14 +73,14 @@ io.on('connection', socket => {
         socket.leave('gamesbrowser');
         socket.join(id);
         io.to(id).emit('joinedgame', game.serialize())
-        io.to('gamesbrowser').emit('joinablegamesdata', getJoinableGames());
+        io.to('gamesbrowser').emit('newgamesbrowserdata', getGamesBrowserData());
     });
 
     // Player slots
     socket.on('switchplayerslot', data => {
         const game = games[data.gameId];
         const currIdx = game.players.findIndex(player => player.nickName === socket.nickName);
-        game.players[currIdx] = 'OPEN';
+        game.players[currIdx] = OPEN_SLOT;
         game.players[data.slotIdx] = socket;
         
         io.to(game.id).emit('switchedplayerslot', game.serialize())
@@ -94,14 +92,14 @@ io.on('connection', socket => {
             occupiedBy.emit('kickedfromgame');
             occupiedBy.leave(game.id);
             occupiedBy.join('gamesbrowser');
-            game.players[data.slotIdx] = 'OPEN';
+            game.players[data.slotIdx] = OPEN_SLOT;
         }
-        game.players[data.slotIdx] = game.players[data.slotIdx] === 'OPEN' ? 'CLOSED' : 'OPEN';
+        game.players[data.slotIdx] = game.players[data.slotIdx] === OPEN_SLOT ? CLOSED_SLOT : OPEN_SLOT;
 
         console.log(game.players);
         
         io.to(game.id).emit('toggledslotopenclosed', game.serialize());
-        io.to('gamesbrowser').emit('joinablegamesdata', getJoinableGames());
+        io.to('gamesbrowser').emit('newgamesbrowserdata', getGamesBrowserData());
     });
 
     // Leave game
@@ -109,13 +107,13 @@ io.on('connection', socket => {
 
         // HERE, handle creator leaving the game
         const game = games[data.gameId];
-        game.players[data.slotIdx] = 'OPEN';
+        game.players[data.slotIdx] = OPEN_SLOT;
         socket.leave(game);
         socket.join('gamesbrowser');
         console.log('leavegame');
         socket.emit('leftgame');
         io.to(game.id).emit('leftgame', game.serialize());
-        io.to('gamesbrowser').emit('joinablegamesdata', getJoinableGames());
+        io.to('gamesbrowser').emit('newgamesbrowserdata', getGamesBrowserData());
     });
 
     clients.push(socket);
@@ -134,7 +132,7 @@ class Game {
 
         let count = 0;
         while (count < this.options.maxPlayers) {
-            this.players.push('OPEN');
+            this.players.push(OPEN_SLOT);
             count++;
         }
         this.players[0] = creator;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-import { recievedJoinableGamesData } from '../actions/joinableGamesActions';
+import { newGamesBrowserData } from '../actions/gamesBrowserActions';
 import { createdGame, joinedGame } from '../actions/gameActions';
 
 
@@ -12,8 +12,8 @@ class GamesBrowser extends Component {
         this.onCreateGameClick = this.onCreateGameClick.bind(this);
         this.onJoinGameClick   = this.onJoinGameClick.bind(this);
 
-        socket.on('joinablegamesdata', games => {
-            this.props.recievedJoinableGamesData(games);
+        socket.on('newgamesbrowserdata', games => {
+            this.props.newGamesBrowserData(games);
         });
 
         socket.on('createdgame', data => {
@@ -76,7 +76,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        recievedJoinableGamesData: data => dispatch(recievedJoinableGamesData(data)),
+        newGamesBrowserData: data => dispatch(newGamesBrowserData(data)),
         joinedGame: data => dispatch(joinedGame(data)),
         createdGame: data => dispatch(createdGame(data))
     }

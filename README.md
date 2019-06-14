@@ -3,7 +3,7 @@
 # MVP
 1. Choose a nickname at the welcome screen
 2. Join or create a game.
-3. In the game lobby wait for the creator to start the game.  If you are the creator, block spots if desired, chose word types, choose number of rounds, and start game when desired.
+3. In the game lobby wait for the creator to start the game.  If you are the creator, block spots if desired, then start game when desired.
 - Get a list of easy, hard, medium words on the backend.
 4. Randomly determine who will go first, then go to the right.
 5. Show the word to the drawer. Remind them the sketch cannot contain letters or numbers.
@@ -20,3 +20,18 @@
 1. Savable data about the game to laugh about later
 2. Expand words list
 3. Lobby chat
+4. Expand game options (word types, number of rounds)
+
+# Todo:
+1. Refactor server emit events
+    - The server should only emit
+        1. meta data for all games for those in gamesbrowser
+        2. specific game data to those in that game
+        3. game play related events (new draw data, guesses, win events, player change events)
+    - Trim down actions and reducers as a result
+2. Testing
+    - Organize per view
+    - Use jest with puppeteer
+    - For Welcome, Games Browser, and Games Lobby can test functionality through app interaction from start.
+    - For Game, can first verify that
+3. Refactor strings to constants file

@@ -12,17 +12,15 @@ class GamesBrowser extends Component {
         this.onCreateGameClick = this.onCreateGameClick.bind(this);
         this.onJoinGameClick   = this.onJoinGameClick.bind(this);
 
-        socket.on('newgamesbrowserdata', games => {
-            this.props.newGamesBrowserData(games);
-        });
-
-        socket.on('createdgame', data => {
-            this.props.createdGame(data);
-        });
-
-        socket.on('joinedgame', data => {
-            this.props.joinedGame(data);
-        });
+        this.turnSocketListeners('on');
+    }
+    componentWillUnmount() {
+        this.turnSocketListeners('off');
+    }
+    turnSocketListeners(which) {
+        socket[which]('newgamesbrowserdata', this.props.newGamesBrowserData);
+        socket[which]('createdgame', this.props.createdGame);
+        socket[which]('joinedgame', this.props.joinedGame);
     }
     onCreateGameClick() {
         socket.emit('creategame');

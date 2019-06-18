@@ -17,23 +17,16 @@ class GameLobby extends Component {
         this.onSlotTogglerClick = this.onSlotTogglerClick.bind(this);
         this.onLeaveClick       = this.onLeaveClick.bind(this);
 
-        socket.on('toggledslotopenclosed', gameData => {
-            console.log('toggledslotopenclosed', gameData);
-            this.props.toggledSlotOpenClosed(gameData);
-        });
-
-        socket.on('switchedplayerslot', gameData => {
-            this.props.switchedPlayerSlot(gameData);
-        });
-
-        socket.on('kickedfromgame', () => {
-            this.props.kickedFromGame();
-        });
-
-        socket.on('leftgame', () => {
-            console.log('leftgame');
-            this.props.leftGame();
-        });
+        this.turnSocketListeners('on');
+    }
+    componentWillUnmount() {
+        this.turnSocketListeners('off');
+    }
+    turnSocketListeners(which) {
+        socket[which]('toggledslotopenclosed', this.props.toggledSlotOpenClosed);
+        socket[which]('switchedplayerslot', this.props.switchedPlayerSlot);
+        socket[which]('kickedfromgame', this.props.kickedFromGame);
+        socket[which]('leftgame', this.props.leftGame);
     }
     onPlayerSlotClick(e) {
         const slotIdx = e.nativeEvent.target.parentNode.getAttribute('idx');

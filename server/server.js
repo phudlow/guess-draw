@@ -108,7 +108,7 @@ io.on('connection', socket => {
         // HERE, handle creator leaving the game
         const game = games[data.gameId];
         game.players[data.slotIdx] = OPEN_SLOT;
-        socket.leave(game);
+        socket.leave(game.id);
         socket.join('gamesbrowser');
         console.log('leavegame');
         socket.emit('leftgame');

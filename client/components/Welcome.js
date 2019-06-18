@@ -9,13 +9,16 @@ class Welcome extends Component {
 
         this.onNickNameSubmit = this.onNickNameSubmit.bind(this);
 
-        // Handle nickname submission responses from socket
-        socket.on('nicknamedenied', nickName => {
+        this.turnSocketListeners('on');
+    }
+    componentWillUnmount() {
+        this.turnSocketListeners('off');
+    }
+    turnSocketListeners(which) {
+        socket[which]('nicknameconfirmed', this.props.nickNameConfirmed);
+        socket[which]('nicknamedenied', nickName => {
             this.refs.nickName.focus();
             alert(`Nickname ${nickName} denied.`);
-        });
-        socket.on('nicknameconfirmed', nickName => {
-            this.props.nickNameConfirmed(nickName);
         });
     }
     onNickNameSubmit(e) {
